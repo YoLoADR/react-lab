@@ -12,11 +12,11 @@ function App() {
         </p>
         <a
           className="App-link"
-          href="https://google.com"
+          href="https://amazon.com"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn Google
+          Learn Amazon
         </a>
         <a
           className="App-link"
