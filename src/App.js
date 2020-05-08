@@ -13,6 +13,14 @@ function App() {
         <p>Ma modif</p>
         <a
           className="App-link"
+          href="https://amazon.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn Amazon
+        </a>
+        <a
+          className="App-link"
           href="https://reactjs.org"
           target="_blank"
           rel="noopener noreferrer"
