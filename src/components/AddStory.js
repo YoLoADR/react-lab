@@ -3,14 +3,9 @@ import StoryDataService from "../service/StoryDataService";
 import { StoryContext } from '../context/story-context';
 
 const AddStory = () => {
-  const initialStoryState = {
-    id: null,
-    title: "",
-    description: "",
-    completed: false
-  };
+  
   const [state, dispatch] = useContext(StoryContext);
-  const [story, setStory] = useState(initialStoryState);
+  const [story, setStory] = useState(state.story);
   const [submitted, setSubmitted] = useState(false);
 
   // Fonction pour suivre les valeurs de l'entrée et définir cet état pour les modifications.
@@ -34,7 +29,7 @@ const AddStory = () => {
           completed: response.data.completed
         });
         dispatch({
-          type: 'CREATE_CONTACT',
+          type: 'CREATE_STORIES',
           payload: response.data,
         });
         setSubmitted(true);
@@ -46,7 +41,7 @@ const AddStory = () => {
   };
 
   const newStory = () => {
-    setStory(initialStoryState);
+    setStory(state.story);
     setSubmitted(false);
   };
 

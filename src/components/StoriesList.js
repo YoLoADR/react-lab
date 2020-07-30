@@ -25,7 +25,7 @@ const StoriesList = () => {
           type: 'FETCH_STORIES',
           payload: response.data.data || response.data, // in case pagination is disabled
         });
-        console.log("response.data", response.data);
+        console.log("FETCH_STORIES", response.data);
       })
       .catch(e => {
         console.log(e);
@@ -46,7 +46,10 @@ const StoriesList = () => {
   const removeAllStories = () => {
     StoryDataService.removeAll()
       .then(response => {
-        console.log(response.data);
+        dispatch({
+          type: 'DELETE_STORIES'
+        });
+        console.log('DELETE_STORIES', response.data);
         refreshList();
       })
       .catch(e => {
@@ -58,7 +61,7 @@ const StoriesList = () => {
     StoryDataService.findByTitle(searchTitle)
       .then(response => {
         dispatch({
-          type: 'FETCH_STORY',
+          type: 'FETCH_STORIES',
           payload: response.data.data || response.data, // in case pagination is disabled
         });
         console.log(response.data);

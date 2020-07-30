@@ -3,7 +3,13 @@ import React, { useReducer, createContext } from 'react';
 export const StoryContext = createContext();
 
 const initialState = {
-  stories: []
+  stories: [],
+  story : {
+    id: null,
+    title: "",
+    description: "",
+    completed: false
+  }
 };
 
 function reducer (state, action) {
@@ -23,7 +29,7 @@ function reducer (state, action) {
         case 'FETCH_STORY': {
             return {
               ...state,
-              stories: action.payload,
+              story: action.payload
             };
           }
         case 'UPDATE_STORY': {
@@ -42,6 +48,12 @@ function reducer (state, action) {
               stories: state.stories.filter(item => item._id !== _id)
             }
           }
+        case 'DELETE_STORIES': {
+          return {
+            ...state,
+            stories: initialState.stories
+          }
+        }
         default: return state;
     }
 }
