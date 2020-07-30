@@ -1,0 +1,9 @@
+import axios from "axios";
+
+export default axios.create({
+    baseURL: "http://localhost:3300/",
+    headers: {
+      "Content-type": "application/json",
+      "Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlZYdEZDSjNjcmRYTWl0QUFRbm1ZVyJ9.eyJpc3MiOiJodHRwczovL3lvaGFubi1yYXZpbm8uZXUuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTAwMTA0MzYzNDAxOTA1MTAyNjY3IiwiYXVkIjpbImh0dHBzOi8vZXhwcmVzcy5zYW1wbGUiLCJodHRwczovL3lvaGFubi1yYXZpbm8uZXUuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTU5NjA5NTA2NSwiZXhwIjoxNTk2MTgxNDY1LCJhenAiOiJCS0ZyN3pkdTlmeG9DeXhWb1Y5RFRsTlE3ZW1MS0lQSiIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwifQ.iYXPhYdqzVFIdm9s-ItdMCEeRiVZREPjjbNO9KUB6C5fH5ANM6W3jyuckxtsAVMNNot3RwZipk4WjINiRrkOLjJxrqpYz5UYvn2x9GfpAr3ryzQnEjYqTbfvdbtd3XeljUIEIWcr8DYQNn3PMDin5MBKTcdouyJW2VPF69g4DESmE2I2bQRIw9XwBndC7BnblUTec3omQ7d5T2NecsNyZkPj-8hboDmyoIiA4of9WB-7gpbZbB5ArFqJslj1AvIQpXJEXdhpnMRczBjr4nszpqCWpwsH_MrDr1on7QLOrHwue1UD4CfEVxHA5NLIuSxEFM9VdPlugC61xUSPX8acdw"
+    }
+  });
