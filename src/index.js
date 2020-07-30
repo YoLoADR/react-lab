@@ -4,11 +4,14 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from "react-router-dom";
+import { StoryContextProvider } from './context/story-context';
 
 ReactDOM.render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>,
+  <StoryContextProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </StoryContextProvider>,
   document.getElementById('root')
 );
 

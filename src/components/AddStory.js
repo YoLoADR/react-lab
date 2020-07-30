@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import StoryDataService from "../service/StoryDataService";
+import { StoryContext } from '../context/story-context';
 
 const AddStory = () => {
   const initialStoryState = {
@@ -8,6 +9,7 @@ const AddStory = () => {
     description: "",
     completed: false
   };
+  const [state, dispatch] = useContext(StoryContext);
   const [story, setStory] = useState(initialStoryState);
   const [submitted, setSubmitted] = useState(false);
 
@@ -30,6 +32,10 @@ const AddStory = () => {
           title: response.data.title,
           description: response.data.description,
           completed: response.data.completed
+        });
+        dispatch({
+          type: 'CREATE_CONTACT',
+          payload: response.data,
         });
         setSubmitted(true);
         console.log(response.data);
