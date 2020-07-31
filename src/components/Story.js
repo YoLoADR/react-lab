@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import StoryDataService from "../service/StoryDataService";
+import { StoryContext } from '../context/story-context';
 
 const Story = props => {
-  const initialStoryState = {
-    _id: null,
-    title: "",
-    description: "",
-    completed: false
-  };
-  const [currentStory, setCurrentStory] = useState(initialStoryState);
+  const [state, dispatch] = useContext(StoryContext);
+  const [currentStory, setCurrentStory] = useState(state.story);
   const [message, setMessage] = useState("");
 
   const getStory = _id => {
     StoryDataService.get(_id)
       .then(response => {
-        setCurrentStory(response.data);
-        console.log(response.data);
+        dispatch({
+          type: 'FETCH_STORY',
+          payload: response.data.data || response.data, // in case pagination is disabled
+        });
+        console.log('FETCH_STORY', response.data);
       })
       .catch(e => {
         console.log(e);
@@ -23,26 +22,35 @@ const Story = props => {
   };
 
   useEffect(() => {
-      console.log("props.match.params._id", props.match.params._id)
     getStory(props.match.params.id);
-  }, [props.match.params.id]);
+  }, [currentStory, props.match.params.id]);
+
 
   const handleInputChange = event => {
     const { name, value } = event.target;
-    setCurrentStory({ ...currentStory, [name]: value });
+    // Dispatch without API call
+    dispatch({
+      type: 'FETCH_STORY',
+      payload: { ...state.story, [name]: value }
+    });
+    console.log('FETCH_STORY');
   };
 
   const updatePublished = status => {
     var data = {
-      title: currentStory.title,
-      description: currentStory.description,
+      title: state.story.title,
+      description: state.story.description,
       completed: status
     };
 
-    StoryDataService.update(currentStory._id, data)
+    StoryDataService.update(state.story._id, data)
       .then(response => {
-        setCurrentStory({ ...currentStory, completed: status });
-        console.log(response.data);
+        setCurrentStory({ ...state.story, completed: status });
+        dispatch({
+          type: 'UPDATE_STORY',
+          payload: response.data,
+        });
+        console.log('UPDATE_STORY', response.data);
       })
       .catch(e => {
         console.log(e);
@@ -50,17 +58,20 @@ const Story = props => {
   };
 
   const updateStory = () => {
-    console.log("currentStory", currentStory);
     
     var data = {
-        title: currentStory.title,
-        // description: currentStory.description,
-        // completed: currentStory.completed
+        title: state.story.title,
+        description: currentStory.description,
+        completed: currentStory.completed
     };
 
-    StoryDataService.update(currentStory._id, data)
+    StoryDataService.update(state.story._id, data)
       .then(response => {
-        console.log(response.data);
+        dispatch({
+          type: 'UPDATE_STORY',
+          payload: response.data,
+        });
+        console.log('UPDATE_STORY', response.data);
         setMessage("The story was updated successfully!");
       })
       .catch(e => {
@@ -69,9 +80,13 @@ const Story = props => {
   };
 
   const deleteStory = () => {
-    StoryDataService.remove(currentStory._id)
+    StoryDataService.remove(state.story._id)
       .then(response => {
-        console.log(response.data);
+        dispatch({
+          type: 'DELETE_STORY',
+          payload: response.data,
+        });
+        console.log('DELETE_STORY', response.data);
         props.history.push("/stories");
       })
       .catch(e => {
@@ -79,9 +94,10 @@ const Story = props => {
       });
   };
 
+
   return (
     <div>
-      {currentStory ? (
+      {state.story ? (
         <div className="edit-form">
           <h4>Story</h4>
           <form>
@@ -92,7 +108,7 @@ const Story = props => {
                 className="form-control"
                 id="title"
                 name="title"
-                value={currentStory.title}
+                value={state.story.title}
                 onChange={handleInputChange}
               />
             </div>
@@ -103,7 +119,7 @@ const Story = props => {
                 className="form-control"
                 id="description"
                 name="description"
-                value={currentStory.description}
+                value={state.story.description}
                 onChange={handleInputChange}
               />
             </div>
@@ -112,11 +128,11 @@ const Story = props => {
               <label>
                 <strong>Status:</strong>
               </label>
-              {currentStory.completed ? "Published" : "Pending"}
+              {state.story.completed ? "Published" : "Pending"}
             </div>
           </form>
 
-          {currentStory.completed ? (
+          {state.story.completed ? (
             <button
               className="badge badge-primary mr-2"
               onClick={() => updatePublished(false)}

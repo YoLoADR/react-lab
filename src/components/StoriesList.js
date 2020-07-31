@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import StoryDataService from "../service/StoryDataService";
 import { Link } from "react-router-dom";
+import { StoryContext } from '../context/story-context';
 
 const StoriesList = () => {
-  const [stories, setStories] = useState([]);
+  const [state, dispatch] = useContext(StoryContext);
   const [currentStory, setCurrentStory] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [searchTitle, setSearchTitle] = useState("");
@@ -20,8 +21,11 @@ const StoriesList = () => {
   const retrieveStories = () => {
     StoryDataService.getAll()
       .then(response => {
-        setStories(response.data);
-        console.log(response.data);
+        dispatch({
+          type: 'FETCH_STORIES',
+          payload: response.data.data || response.data, // in case pagination is disabled
+        });
+        console.log("FETCH_STORIES", response.data);
       })
       .catch(e => {
         console.log(e);
@@ -42,7 +46,10 @@ const StoriesList = () => {
   const removeAllStories = () => {
     StoryDataService.removeAll()
       .then(response => {
-        console.log(response.data);
+        dispatch({
+          type: 'DELETE_STORIES'
+        });
+        console.log('DELETE_STORIES', response.data);
         refreshList();
       })
       .catch(e => {
@@ -53,7 +60,10 @@ const StoriesList = () => {
   const findByTitle = () => {
     StoryDataService.findByTitle(searchTitle)
       .then(response => {
-        setStories(response.data);
+        dispatch({
+          type: 'FETCH_STORIES',
+          payload: response.data.data || response.data, // in case pagination is disabled
+        });
         console.log(response.data);
       })
       .catch(e => {
@@ -87,8 +97,8 @@ const StoriesList = () => {
         <h4>Stories List</h4>
 
         <ul className="list-group">
-          {stories &&
-            stories.map((story, index) => (
+          {state.stories &&
+            state.stories.map((story, index) => (
               <li
                 className={
                   "list-group-item " + (index === currentIndex ? "active" : "")

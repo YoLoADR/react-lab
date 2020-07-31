@@ -30,11 +30,11 @@ function App() {
         </nav>
 
         <div className="container mt-3">
-          <Switch>
-            <Route exact path={["/", "/stories"]} component={StoriesList} />
-            <Route exact path="/add" component={AddStory} />
-            <Route path="/stories/:id" component={Story} />
-          </Switch>
+            <Switch>
+              <Route exact path={["/", "/stories"]} component={StoriesList} />
+              <Route exact path="/add" component={AddStory} />
+              <Route path="/stories/:id" component={Story} />
+            </Switch>
         </div>
       </div>
     </Router>

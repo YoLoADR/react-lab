@@ -1,14 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import StoryDataService from "../service/StoryDataService";
+import { StoryContext } from '../context/story-context';
 
 const AddStory = () => {
-  const initialStoryState = {
-    id: null,
-    title: "",
-    description: "",
-    completed: false
-  };
-  const [story, setStory] = useState(initialStoryState);
+  
+  const [state, dispatch] = useContext(StoryContext);
+  const [story, setStory] = useState(state.story);
   const [submitted, setSubmitted] = useState(false);
 
   // Fonction pour suivre les valeurs de l'entrée et définir cet état pour les modifications.
@@ -31,6 +28,10 @@ const AddStory = () => {
           description: response.data.description,
           completed: response.data.completed
         });
+        dispatch({
+          type: 'CREATE_STORIES',
+          payload: response.data,
+        });
         setSubmitted(true);
         console.log(response.data);
       })
@@ -40,7 +41,7 @@ const AddStory = () => {
   };
 
   const newStory = () => {
-    setStory(initialStoryState);
+    setStory(state.story);
     setSubmitted(false);
   };
 
