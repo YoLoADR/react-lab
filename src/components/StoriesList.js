@@ -64,7 +64,7 @@ const StoriesList = () => {
           type: 'FETCH_STORIES',
           payload: response.data.data || response.data, // in case pagination is disabled
         });
-        console.log(response.data);
+        console.log('FETCH_STORIES', response.data);
       })
       .catch(e => {
         console.log(e);
