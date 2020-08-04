@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
+
 
 import AddStory from "./components/AddStory";
 import Story from "./components/Story";
@@ -13,7 +13,7 @@ function App() {
       <div>
         <nav className="navbar navbar-expand navbar-dark bg-dark">
           <a href="/stories" className="navbar-brand">
-            bezKoder
+            TodoApp
           </a>
           <div className="navbar-nav mr-auto">
             <li className="nav-item">
