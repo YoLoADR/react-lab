@@ -52,9 +52,9 @@ function App() {
                 <Route exact path={["/", "/home"]} component={Home} />
                 <PrivateRoute path="/profile" component={Profile} />
                 <PrivateRoute path="/external-api" component={ExternalApi} />
+                <PrivateRoute path="/stories/:id" component={Story} />
                 <PrivateRoute path="/stories" component={StoriesList} />
                 <PrivateRoute path="/add" component={AddStory} />
-                <PrivateRoute path="/stories/:id" component={Story} />
               </Switch>
           </div>
         </div>

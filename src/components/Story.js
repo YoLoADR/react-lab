@@ -1,24 +1,32 @@
 import React, { useState, useEffect, useContext } from "react";
 import StoryDataService from "../service/StoryDataService";
 import { StoryContext } from '../context/story-context';
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Story = props => {
   const [state, dispatch] = useContext(StoryContext);
   const [currentStory, setCurrentStory] = useState(state.story);
   const [message, setMessage] = useState("");
+  const [token, setToken] = useState(null);
+  const { getAccessTokenSilently } = useAuth0();
 
-  const getStory = _id => {
-    StoryDataService.get(_id)
-      .then(response => {
-        dispatch({
-          type: 'FETCH_STORY',
-          payload: response.data.data || response.data, // in case pagination is disabled
-        });
-        console.log('FETCH_STORY', response.data);
-      })
-      .catch(e => {
-        console.log(e);
+  const getStory = async (_id) => {
+    try {
+      const newToken = await getAccessTokenSilently();
+      const payload = {
+          _id,
+          token : newToken
+        }
+      const response = await StoryDataService.get(payload);
+      dispatch({
+        type: 'FETCH_STORY',
+        payload: response.data.data || response.data, // in case pagination is disabled
       });
+      setToken(newToken)
+      console.log('FETCH_STORY', response.data);
+    } catch (error) {
+      setMessage(error.message);
+    }
   };
 
   useEffect(() => {
@@ -36,62 +44,69 @@ const Story = props => {
     console.log('FETCH_STORY');
   };
 
-  const updatePublished = status => {
-    var data = {
+  const updatePublished = async (status) => {
+
+    var payload = {
       title: state.story.title,
       description: state.story.description,
-      completed: status
-    };
-
-    StoryDataService.update(state.story._id, data)
-      .then(response => {
-        setCurrentStory({ ...state.story, completed: status });
-        dispatch({
-          type: 'UPDATE_STORY',
-          payload: response.data,
-        });
-        console.log('UPDATE_STORY', response.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
+      completed: status,
+      _id: state.story._id,
+      token
   };
 
-  const updateStory = () => {
+    try {
+      const response = await StoryDataService.update(payload)
+      setCurrentStory({ ...state.story, completed: status });
+      dispatch({
+        type: 'UPDATE_STORY',
+        payload: response.data,
+      });
+      console.log('UPDATE_STORY', response.data);
+      setMessage("The story was updated successfully!");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateStory = async () => {
     
-    var data = {
+    var payload = {
         title: state.story.title,
-        description: currentStory.description,
-        completed: currentStory.completed
+        description: state.story.description,
+        completed: currentStory.completed,
+        _id: state.story._id,
+        token
     };
 
-    StoryDataService.update(state.story._id, data)
-      .then(response => {
-        dispatch({
-          type: 'UPDATE_STORY',
-          payload: response.data,
-        });
-        console.log('UPDATE_STORY', response.data);
-        setMessage("The story was updated successfully!");
-      })
-      .catch(e => {
-        console.log(e);
+    try {
+      const response = await StoryDataService.update(payload)
+      dispatch({
+        type: 'UPDATE_STORY',
+        payload: response.data,
       });
+      console.log('UPDATE_STORY', response.data);
+      setMessage("The story was updated successfully!");
+      props.history.push("/stories");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const deleteStory = () => {
-    StoryDataService.remove(state.story._id)
-      .then(response => {
-        dispatch({
-          type: 'DELETE_STORY',
-          payload: response.data,
-        });
-        console.log('DELETE_STORY', response.data);
-        props.history.push("/stories");
-      })
-      .catch(e => {
-        console.log(e);
+  const deleteStory = async () => {
+    try {
+      const payload = {
+          _id : state.story._id,
+          token
+        }
+      const response = await StoryDataService.remove(payload);
+      dispatch({
+        type: 'DELETE_STORY',
+        payload: response.data,
       });
+      props.history.push("/stories");
+    } catch (error) {
+      setMessage(error.message);
+    }
   };
 
 

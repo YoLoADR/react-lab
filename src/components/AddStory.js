@@ -1,43 +1,46 @@
 import React, { useState, useContext } from "react";
 import StoryDataService from "../service/StoryDataService";
 import { StoryContext } from '../context/story-context';
+import { useAuth0 } from "@auth0/auth0-react";
 
 const AddStory = () => {
   
   const [state, dispatch] = useContext(StoryContext);
   const [story, setStory] = useState(state.story);
   const [submitted, setSubmitted] = useState(false);
-
+  const [message, setMessage] = useState("");
+  const { getAccessTokenSilently } = useAuth0();
   // Fonction pour suivre les valeurs de l'entrée et définir cet état pour les modifications.
   const handleInputChange = event => {
     const { name, value } = event.target;
     setStory({ ...story, [name]: value });
   };
 
-  const saveStory = () => {
-    var data = {
+  const saveStory = async () => {
+    var payload = {
       title: story.title,
-      description: story.description
+      description: story.description,
+      token : await getAccessTokenSilently()
     };
-    //fonction pour obtenir l'état du tutoriel et envoyer la requête POST à ​​l'API Web
-    StoryDataService.create(data)
-      .then(response => {
-        setStory({
-          id: response.data.id,
-          title: response.data.title,
-          description: response.data.description,
-          completed: response.data.completed
-        });
-        dispatch({
-          type: 'CREATE_STORIES',
-          payload: response.data,
-        });
-        setSubmitted(true);
-        console.log(response.data);
-      })
-      .catch(e => {
-        console.log(e);
+
+    try {
+      const response = await StoryDataService.create(payload)
+      dispatch({
+        type: 'CREATE_STORIES',
+        payload: response.data,
       });
+      setStory({
+        id: response.data.id,
+        title: response.data.title,
+        description: response.data.description,
+        completed: response.data.completed
+      });
+      setSubmitted(true);
+      const responseData = await response.json();
+      setMessage(responseData);
+    } catch (error) {
+      setMessage(error.message);
+    }
   };
 
   const newStory = () => {
