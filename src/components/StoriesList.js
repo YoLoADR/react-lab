@@ -19,6 +19,7 @@ const StoriesList = () => {
   };
 
   const retrieveStories = () => {
+    
     StoryDataService.getAll()
       .then(response => {
         dispatch({
