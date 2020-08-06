@@ -18,7 +18,7 @@ const get = payload => {
 
 
 const create = payload => {
-  const newStory = { title: payload.title, description: payload.description}
+  const newStory = { title: payload.title, description: payload.description, user: payload.user}
   return http.post("/user-story", newStory , {
     headers: {
       Authorization: `Bearer ${payload.token}`

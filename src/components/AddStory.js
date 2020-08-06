@@ -9,7 +9,7 @@ const AddStory = () => {
   const [story, setStory] = useState(state.story);
   const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState("");
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
   // Fonction pour suivre les valeurs de l'entrée et définir cet état pour les modifications.
   const handleInputChange = event => {
     const { name, value } = event.target;
@@ -20,7 +20,8 @@ const AddStory = () => {
     var payload = {
       title: story.title,
       description: story.description,
-      token : await getAccessTokenSilently()
+      token : await getAccessTokenSilently(),
+      user
     };
 
     try {
