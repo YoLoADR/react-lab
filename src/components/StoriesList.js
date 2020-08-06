@@ -2,12 +2,16 @@ import React, { useState, useEffect, useContext } from "react";
 import StoryDataService from "../service/StoryDataService";
 import { Link } from "react-router-dom";
 import { StoryContext } from '../context/story-context';
+import { useAuth0 } from "@auth0/auth0-react";
 
 const StoriesList = () => {
   const [state, dispatch] = useContext(StoryContext);
   const [currentStory, setCurrentStory] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [searchTitle, setSearchTitle] = useState("");
+  const [token, setToken] = useState(null);
+  const [message, setMessage] = useState("");
+  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     retrieveStories();
@@ -18,18 +22,21 @@ const StoriesList = () => {
     setSearchTitle(searchTitle);
   };
 
-  const retrieveStories = () => {
-    StoryDataService.getAll()
-      .then(response => {
-        dispatch({
-          type: 'FETCH_STORIES',
-          payload: response.data.data || response.data, // in case pagination is disabled
-        });
-        console.log("FETCH_STORIES", response.data);
-      })
-      .catch(e => {
-        console.log(e);
+  const retrieveStories = async () => {
+    try {
+      const newToken = await getAccessTokenSilently();
+      const response = await StoryDataService.getAll(newToken);
+      dispatch({
+        type: 'FETCH_STORIES',
+        payload: response.data.data || response.data, // in case pagination is disabled
       });
+      setToken(newToken)
+      const responseData = await response.json();
+
+      setMessage(responseData);
+    } catch (error) {
+      setMessage(error.message);
+    }
   };
 
   const refreshList = () => {
@@ -43,32 +50,31 @@ const StoriesList = () => {
     setCurrentIndex(index);
   };
 
-  const removeAllStories = () => {
-    StoryDataService.removeAll()
-      .then(response => {
-        dispatch({
-          type: 'DELETE_STORIES'
-        });
-        console.log('DELETE_STORIES', response.data);
-        refreshList();
-      })
-      .catch(e => {
-        console.log(e);
+  const removeAllStories = async () => {
+    try {
+      const response = await StoryDataService.removeAll(token)
+      dispatch({
+        type: 'DELETE_STORIES'
       });
+      console.log('DELETE_STORIES', response.data);
+      refreshList();
+    } catch (error) {
+      setMessage(error.message);
+    }
   };
 
-  const findByTitle = () => {
-    StoryDataService.findByTitle(searchTitle)
-      .then(response => {
-        dispatch({
-          type: 'FETCH_STORIES',
-          payload: response.data.data || response.data, // in case pagination is disabled
-        });
-        console.log('FETCH_STORIES', response.data);
-      })
-      .catch(e => {
-        console.log(e);
+  const findByTitle = async () => {
+    const payload = { token, title : searchTitle }
+    try {
+      const response = await StoryDataService.findByTitle(payload)
+      dispatch({
+        type: 'FETCH_STORIES',
+        payload: response.data.data || response.data, // in case pagination is disabled
       });
+      console.log('FETCH_STORIES', response.data);
+    } catch (error) {
+      setMessage(error.message);
+    }
   };
 
   return (
